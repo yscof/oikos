@@ -1,0 +1,35 @@
+{
+    "name": "오이코스",
+    "short_name": "오이코스",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#5E7A66",
+    "theme_color": "#5E7A66",
+    "description": "돈을 자연스럽게 이해하게 만드는 가계부, 오이코스",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

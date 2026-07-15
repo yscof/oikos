@@ -1,0 +1,25 @@
+name: oikos
+description: "돈을 관리하게 만드는 것이 아니라, 자연스럽게 이해하게 만드는 가계부 — 오이코스"
+publish_to: "none"
+
+# 스토어 업로드 시 buildNumber(+N)를 올린다.
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^3.3.2
+  go_router: ^17.3.0
+  shared_preferences: ^2.5.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

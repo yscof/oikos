@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/clock.dart';
 import '../../core/formats.dart';
 import '../record/record_sheet.dart';
+import 'insight_card.dart';
 import 'recent_entries.dart';
 
 /// 홈 = 인사이트 공간. 거래내역 표가 아니라 "내 금융 상태" 한 문장이 주인공.
@@ -47,11 +48,7 @@ class HomeScreen extends ConsumerWidget {
                 child: ListView(
                   children: [
                     const SizedBox(height: 24),
-                    // M4에서 인사이트 엔진의 헤드라인으로 교체된다.
-                    Text(
-                      '기록이 쌓이면 소비의 흐름을 읽어드릴게요',
-                      style: textTheme.headlineSmall,
-                    ),
+                    const InsightCard(),
                     const SizedBox(height: 36),
                     const RecentEntries(),
                   ],

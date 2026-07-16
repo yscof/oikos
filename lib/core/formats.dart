@@ -24,6 +24,15 @@ String wonCompact(int amount) {
   return '${_group(man)}만 $thousand천원';
 }
 
+/// 소수 1자리, 불필요한 .0은 지운다. 예) 1.5 → 1.5, 2.0 → 2
+String num1(double v) => v.toStringAsFixed(1).replaceFirst(RegExp(r'\.0$'), '');
+
+/// 근거 문장용 만 단위. 예) 32,000 → 3.2만원, 20,000 → 2만원, 9,000 → 9,000원
+String wonMan(num amount) {
+  if (amount.abs() < 10000) return won(amount.round());
+  return '${num1(amount / 10000)}만원';
+}
+
 /// 내역 그룹 헤더용 날짜 라벨: 오늘 / 어제 / M월 d일
 String dayLabel(DateTime date, DateTime now) {
   final day = DateTime(date.year, date.month, date.day);

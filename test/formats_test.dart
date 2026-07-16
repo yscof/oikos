@@ -1,0 +1,54 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:oikos/core/formats.dart';
+
+void main() {
+  group('won', () {
+    test('콤마 그룹핑', () {
+      expect(won(0), '0원');
+      expect(won(500), '500원');
+      expect(won(12000), '12,000원');
+      expect(won(1234567), '1,234,567원');
+    });
+
+    test('음수', () {
+      expect(won(-12000), '-12,000원');
+    });
+  });
+
+  group('wonCompact', () {
+    test('만 미만은 콤마 그대로', () {
+      expect(wonCompact(9500), '9,500원');
+      expect(wonCompact(0), '0원');
+    });
+
+    test('만/천 축약', () {
+      expect(wonCompact(124000), '12만 4천원');
+      expect(wonCompact(420000), '42만원');
+      expect(wonCompact(10000), '1만원');
+    });
+
+    test('천 미만 자리는 버린다', () {
+      expect(wonCompact(124567), '12만 4천원');
+      expect(wonCompact(12345678), '1,234만 5천원');
+    });
+  });
+
+  group('dayLabel', () {
+    final now = DateTime(2026, 7, 16, 14, 30);
+
+    test('오늘/어제', () {
+      expect(dayLabel(DateTime(2026, 7, 16, 1), now), '오늘');
+      expect(dayLabel(DateTime(2026, 7, 15, 23), now), '어제');
+    });
+
+    test('그 외는 M월 d일', () {
+      expect(dayLabel(DateTime(2026, 7, 3), now), '7월 3일');
+      expect(dayLabel(DateTime(2025, 12, 25), now), '12월 25일');
+    });
+  });
+
+  test('weekdayKo', () {
+    expect(weekdayKo(DateTime(2026, 7, 13)), '월');
+    expect(weekdayKo(DateTime(2026, 7, 19)), '일');
+  });
+}

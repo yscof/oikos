@@ -1,28 +1,25 @@
-# 작업 재개 가이드 (2026-07-16 중단 시점)
+# 작업 재개 가이드 (2026-07-16 갱신)
 
 ## 현재 상태
 
-- [x] 계획 승인 완료 → `docs/PLAN.md` (원본: `C:\Users\user\.claude\plans\3-adaptive-meteor.md`)
-- [x] **M0 일부**: didim에서 android/ios/web 스캐폴드 복사, 번들 ID `com.oikos.app`으로 개명(gradle 2곳, pbxproj 6곳, MainActivity 경로/패키지), 앱 표시명 `오이코스`, web 매니페스트/타이틀/테마색 `#5E7A66`, `pubspec.yaml`, README
-- [ ] **M0 나머지 (다음 작업)**: `lib/main.dart` + `lib/app/theme.dart` + 플레이스홀더 홈, `test/app_smoke_test.dart`, `.github/workflows/ci.yml` (setup-java temurin 17 → subosito/flutter-action → pub get → analyze → test → build apk → APK·pubspec.lock 아티팩트)
-- [ ] M1~M6: PLAN.md 마일스톤 순서대로
-- [ ] GitHub 저장소가 아직 없다면: github.com/new 에서 `oikos` (public, README 없이) 생성 후 push
+- [x] M0 — CI 그린 셸: 스캐폴드 + main/theme/홈 + 스모크 테스트 + ci.yml + pubspec.lock
+- [x] M1 — 데이터 레이어: entry, entry_store(SharedPreferences JSON), clock, formats + 유닛 테스트
+- [x] M2 — 기록 시트 + 내역 타임라인 + 라우터('/', '/history', '/settings') + 위젯 테스트
+- [x] M3 — 스마트 카테고리 추천기(시간대·금액대·요일 + 지수 감쇠) + 칩 자동 선택
+- [x] M4 — 룰 기반 인사이트 엔진(6룰 + steady 폴백) + 홈 헤드라인/근거 시트/주간 소문 + 톤 계약 테스트
+- [x] M5 — 설정(내보내기/전체 삭제/라이선스/버전) + 내역 탭 → 항목 수정
+- [ ] **M6 (다음 작업)** — 3초 폴리시: 커스텀 금액 키패드, 다크모드/타이포 패스, 앱 아이콘, iOS 빌드 워크플로(workflow_dispatch, macos-latest, --no-codesign)
+- [ ] M7+ — 스토어 트랙: 개인정보처리방침(GitHub Pages), Play 키스토어 + appbundle, applicationId(`com.oikos.app`) 최종 확정
 
-## 재개 프롬프트 (아래를 복사해서 Claude Code에 붙여넣기)
+## 검증 워크플로
 
-```
-c:\Users\user\Desktop\oikos 프로젝트 작업을 재개해줘.
-docs/PLAN.md(승인된 구현 계획)와 docs/RESUME.md(중단 시점 상태)를 읽고,
-M0 나머지(main.dart, theme, 스모크 테스트, ci.yml)부터 이어서
-PLAN.md의 마일스톤 순서(M1 데이터 레이어 → M2 기록/내역 → M3 카테고리 추천기
-→ M4 인사이트 엔진 → M5 설정/수정)대로 구현해줘.
-마일스톤마다 커밋하고 main에 푸시해서 GitHub Actions로 검증해줘.
-로컬에 Flutter가 없으니 모든 검증은 CI로 한다는 제약을 지켜줘.
-```
+- 각 마일스톤 = 1 커밋 = 1 push(main) = 1 CI 실행(analyze → test → APK 빌드 → 아티팩트)
+- 로컬에 Flutter가 있으면 `flutter analyze && flutter test`로 선검증 후 푸시
+- APK는 Actions 실행 페이지의 `oikos-apk` 아티팩트로 사이드로드 테스트
 
 ## 주의사항
 
-- 로컬 Flutter SDK 없음 → `flutter` 명령 실행 불가, 파일은 수작업 작성, 검증은 CI
 - codegen(build_runner) 의존성 금지
-- `pubspec.lock`이 아직 없음 → 첫 CI 실행에서 아티팩트로 받아 커밋
-- applicationId(`com.oikos.app`)는 첫 Play Console 업로드 전 최종 확정 필요
+- 모든 사용자 노출 인사이트 문장은 `lib/insight/insight_messages.dart`에만 — 톤 계약은 `test/tone_test.dart`가 기계 검증
+- 지출 금액에 빨간색 금지, 게임화 요소 금지 (PLAN.md 원칙)
+- 저장 키 `oikos_entries_v1` — 포맷 변경 시 v2 + 마이그레이션

@@ -1,23 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-/// M0 플레이스홀더 홈. M2에서 최근 기록, M4에서 인사이트 헤드라인이 들어온다.
-class HomeScreen extends StatelessWidget {
+import '../../core/clock.dart';
+import '../../core/formats.dart';
+import '../record/record_sheet.dart';
+import 'recent_entries.dart';
+
+/// 홈 = 인사이트 공간. 거래내역 표가 아니라 "내 금융 상태" 한 문장이 주인공.
+/// 포인트/배지/스트릭 없음.
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final now = ref.watch(clockProvider)();
     final textTheme = Theme.of(context).textTheme;
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
     return Scaffold(
       body: SafeArea(
-        child: Center(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('오이코스', style: textTheme.headlineMedium),
-              const SizedBox(height: 12),
-              Text(
-                '기록이 쌓이면 소비의 흐름을 읽어드릴게요',
-                style: textTheme.bodyMedium,
+              Row(
+                children: [
+                  Text(
+                    '${now.month}월 ${now.day}일 ${weekdayKo(now)}요일',
+                    style: textTheme.labelLarge?.copyWith(color: muted),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    tooltip: '내역',
+                    icon: const Icon(Icons.receipt_long_outlined),
+                    onPressed: () => context.push('/history'),
+                  ),
+                  IconButton(
+                    tooltip: '설정',
+                    icon: const Icon(Icons.settings_outlined),
+                    onPressed: () => context.push('/settings'),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ListView(
+                  children: [
+                    const SizedBox(height: 24),
+                    // M4에서 인사이트 엔진의 헤드라인으로 교체된다.
+                    Text(
+                      '기록이 쌓이면 소비의 흐름을 읽어드릴게요',
+                      style: textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 36),
+                    const RecentEntries(),
+                  ],
+                ),
+              ),
+              FilledButton(
+                onPressed: () => showRecordSheet(context),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(56),
+                ),
+                child: const Text('기록하기'),
               ),
             ],
           ),

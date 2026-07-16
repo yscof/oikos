@@ -9,17 +9,20 @@ import '../../data/entry_store.dart';
 import '../../insight/category_suggester.dart';
 
 /// 기록 해피패스 = 금액 입력 → (추천 1위 칩 자동 선택) → 저장, 약 3초.
-Future<void> showRecordSheet(BuildContext context) {
+/// [editing]을 주면 그 항목을 수정한다.
+Future<void> showRecordSheet(BuildContext context, {Entry? editing}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (context) => const RecordSheet(),
+    builder: (context) => RecordSheet(editing: editing),
   );
 }
 
 class RecordSheet extends ConsumerStatefulWidget {
-  const RecordSheet({super.key});
+  const RecordSheet({super.key, this.editing});
+
+  final Entry? editing;
 
   @override
   ConsumerState<RecordSheet> createState() => _RecordSheetState();
@@ -33,6 +36,23 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
   DateTime? _pickedDay; // null = 오늘
   final _amountController = TextEditingController();
   final _memoController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final editing = widget.editing;
+    if (editing != null) {
+      _kind = editing.kind;
+      _picked = editing.category;
+      _pickedDay = DateTime(
+        editing.occurredAt.year,
+        editing.occurredAt.month,
+        editing.occurredAt.day,
+      );
+      _amountController.text = editing.amountWon.toString();
+      _memoController.text = editing.memo;
+    }
+  }
 
   @override
   void dispose() {
@@ -61,20 +81,33 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
 
   Future<void> _save() async {
     final now = ref.read(clockProvider)();
-    final day = _pickedDay;
-    final occurredAt = day == null
-        ? now
-        : DateTime(day.year, day.month, day.day, now.hour, now.minute);
-    final entry = Entry(
-      id: newEntryId(now),
-      kind: _kind,
-      amountWon: _amount,
-      category: _effectiveCategory(_ranked()),
-      memo: _memoController.text.trim(),
-      occurredAt: occurredAt,
-      createdAt: now,
-    );
-    await ref.read(entryStoreProvider.notifier).add(entry);
+    final editing = widget.editing;
+    final store = ref.read(entryStoreProvider.notifier);
+    if (editing != null) {
+      final day = _pickedDay!;
+      await store.update(editing.copyWith(
+        kind: _kind,
+        amountWon: _amount,
+        category: _effectiveCategory(_ranked()),
+        memo: _memoController.text.trim(),
+        occurredAt: DateTime(day.year, day.month, day.day,
+            editing.occurredAt.hour, editing.occurredAt.minute),
+      ));
+    } else {
+      final day = _pickedDay;
+      final occurredAt = day == null
+          ? now
+          : DateTime(day.year, day.month, day.day, now.hour, now.minute);
+      await store.add(Entry(
+        id: newEntryId(now),
+        kind: _kind,
+        amountWon: _amount,
+        category: _effectiveCategory(_ranked()),
+        memo: _memoController.text.trim(),
+        occurredAt: occurredAt,
+        createdAt: now,
+      ));
+    }
     if (!mounted) return;
     Navigator.of(context).pop(); // 저장 후 팡파레 없음 — 조용히 닫는다.
   }

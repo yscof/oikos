@@ -6,6 +6,7 @@ import '../../core/formats.dart';
 import '../../data/entry.dart';
 import '../../data/entry_store.dart';
 import '../home/recent_entries.dart' show EntryTile;
+import '../record/record_sheet.dart';
 
 /// 날짜 그룹 타임라인. 의미(인사이트)는 홈에, 여기는 사실만.
 class HistoryScreen extends ConsumerWidget {
@@ -105,6 +106,7 @@ class HistoryScreen extends ConsumerWidget {
       children.add(
         EntryTile(
           entry: e,
+          onTap: () => showRecordSheet(context, editing: e),
           onLongPress: () => _confirmDelete(context, ref, e),
         ),
       );

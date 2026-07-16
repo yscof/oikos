@@ -6,6 +6,7 @@ import '../../core/clock.dart';
 import '../../core/formats.dart';
 import '../../data/entry.dart';
 import '../../data/entry_store.dart';
+import '../../insight/category_suggester.dart';
 
 /// 기록 해피패스 = 금액 입력 → (추천 1위 칩 자동 선택) → 저장, 약 3초.
 Future<void> showRecordSheet(BuildContext context) {
@@ -26,7 +27,9 @@ class RecordSheet extends ConsumerStatefulWidget {
 
 class _RecordSheetState extends ConsumerState<RecordSheet> {
   EntryKind _kind = EntryKind.expense;
-  Category _selected = Category.of(EntryKind.expense).first;
+
+  /// 사용자가 직접 고른 칩. null이면 추천 1위가 자동 선택된다.
+  Category? _picked;
   DateTime? _pickedDay; // null = 오늘
   final _amountController = TextEditingController();
   final _memoController = TextEditingController();
@@ -40,6 +43,22 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
 
   int get _amount => int.tryParse(_amountController.text) ?? 0;
 
+  /// 추천순 카테고리. 금액·시각이 바뀔 때마다 실시간 재정렬.
+  List<Category> _ranked() {
+    if (_kind == EntryKind.income) return Category.of(EntryKind.income);
+    return rankCategories(
+      now: ref.read(clockProvider)(),
+      amountWon: _amount,
+      history: ref.read(entryStoreProvider),
+    );
+  }
+
+  Category _effectiveCategory(List<Category> ranked) {
+    final picked = _picked;
+    if (picked != null && picked.kind == _kind) return picked;
+    return ranked.first;
+  }
+
   Future<void> _save() async {
     final now = ref.read(clockProvider)();
     final day = _pickedDay;
@@ -50,7 +69,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
       id: newEntryId(now),
       kind: _kind,
       amountWon: _amount,
-      category: _selected,
+      category: _effectiveCategory(_ranked()),
       memo: _memoController.text.trim(),
       occurredAt: occurredAt,
       createdAt: now,
@@ -74,7 +93,9 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
   @override
   Widget build(BuildContext context) {
     final now = ref.watch(clockProvider)();
-    final categories = Category.of(_kind);
+    ref.watch(entryStoreProvider); // 이력 변경 시 추천 재계산
+    final categories = _ranked();
+    final selected = _effectiveCategory(categories);
     final dayText = _pickedDay == null ? '오늘' : dayLabel(_pickedDay!, now);
     return Padding(
       padding: EdgeInsets.only(
@@ -102,7 +123,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
                   selected: {_kind},
                   onSelectionChanged: (selection) => setState(() {
                     _kind = selection.single;
-                    _selected = Category.of(_kind).first;
+                    _picked = null; // 새 kind의 추천 1위로 되돌린다
                   }),
                 ),
                 const Spacer(),
@@ -137,9 +158,9 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
                   ChoiceChip(
                     label: Text(category.label),
                     avatar: Icon(category.icon, size: 18),
-                    selected: _selected == category,
+                    selected: selected == category,
                     showCheckmark: false,
-                    onSelected: (_) => setState(() => _selected = category),
+                    onSelected: (_) => setState(() => _picked = category),
                   ),
               ],
             ),

@@ -1,4 +1,4 @@
-package oikos.example.app
+package com.yscof.oikos
 
 import io.flutter.embedding.android.FlutterActivity
 

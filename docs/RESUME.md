@@ -9,7 +9,7 @@
 - [x] M4 — 룰 기반 인사이트 엔진(6룰 + steady 폴백) + 홈 헤드라인/근거 시트/주간 소문 + 톤 계약 테스트
 - [x] M5 — 설정(내보내기/전체 삭제/라이선스/버전) + 내역 탭 → 항목 수정
 - [ ] **M6 (다음 작업)** — 3초 폴리시: 커스텀 금액 키패드, 다크모드/타이포 패스, 앱 아이콘, iOS 빌드 워크플로(workflow_dispatch, macos-latest, --no-codesign)
-- [~] M7+ — 스토어 트랙: 개인정보처리방침(docs/privacy.html) ✓, Play 키스토어 + appbundle CI ✓, applicationId `oikos.example.app` 확정(2026-07-19) — 콘솔 등록·업로드 진행 중
+- [~] M7+ — 스토어 트랙: 개인정보처리방침(docs/privacy.html) ✓, Play 키스토어 + appbundle CI ✓, applicationId `com.yscof.oikos` 확정(2026-07-19) — 콘솔 등록·업로드 진행 중
 
 ## 검증 워크플로
 

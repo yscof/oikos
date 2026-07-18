@@ -9,6 +9,9 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      # 저장소 secrets(UPLOAD_KEYSTORE_BASE64 등) 등록 전에는 AAB 단계가 스킵된다.
+      HAS_KEYSTORE: ${{ secrets.UPLOAD_KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +29,22 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
+
+      # Play 업로드 서명 자료 복원 — secrets가 있을 때만
+      - name: Prepare Play signing
+        if: env.HAS_KEYSTORE == 'true'
+        env:
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          echo "$UPLOAD_KEYSTORE_BASE64" | base64 -d > android/upload-keystore.jks
+          {
+            echo "storeFile=../upload-keystore.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyPassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=upload"
+          } > android/key.properties
+
       - run: flutter build apk --release
 
       # 안드로이드 기기 사이드로드 테스트용
@@ -33,3 +52,15 @@ jobs:
         with:
           name: oikos-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      # Play Console 업로드용 AAB — 서명 secrets 등록 후에만 생성된다
+      - name: Build appbundle
+        if: env.HAS_KEYSTORE == 'true'
+        run: flutter build appbundle --release
+
+      - name: Upload AAB
+        if: env.HAS_KEYSTORE == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: oikos-aab
+          path: build/app/outputs/bundle/release/app-release.aab

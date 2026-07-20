@@ -1,0 +1,54 @@
+name: Deploy Web
+
+# GitHub Pages: privacy.html(docs/) + 웹 데모(/app/)를 함께 배포한다.
+# 저장소 Settings → Pages → Source가 "GitHub Actions"여야 동작.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter build web --release --base-href /oikos/app/
+
+      - name: Assemble site (docs + web app)
+        run: |
+          mkdir -p _site
+          cp -r docs/* _site/
+          mkdir -p _site/app
+          cp -r build/web/* _site/app/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

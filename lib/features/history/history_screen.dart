@@ -8,15 +8,26 @@ import '../../data/entry_store.dart';
 import '../home/recent_entries.dart' show EntryTile;
 import '../record/record_sheet.dart';
 
-/// 날짜 그룹 타임라인. 의미(인사이트)는 홈에, 여기는 사실만.
-class HistoryScreen extends ConsumerWidget {
+/// 날짜 그룹 타임라인 + 검색·필터(FR-406). 의미(인사이트)는 홈에, 여기는 사실만.
+class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
 
-  Future<void> _confirmDelete(
-    BuildContext context,
-    WidgetRef ref,
-    Entry entry,
-  ) async {
+  @override
+  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+  final _searchController = TextEditingController();
+  String _query = '';
+  Category? _categoryFilter; // null = 전체
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _confirmDelete(Entry entry) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -39,8 +50,17 @@ class HistoryScreen extends ConsumerWidget {
     }
   }
 
+  bool _matches(Entry e) {
+    if (_categoryFilter != null && e.category != _categoryFilter) return false;
+    if (_query.isNotEmpty) {
+      final hay = '${e.category.label} ${e.memo}'.toLowerCase();
+      if (!hay.contains(_query.toLowerCase())) return false;
+    }
+    return true;
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final entries = ref.watch(entryStoreProvider);
     final now = ref.watch(clockProvider)();
     final textTheme = Theme.of(context).textTheme;
@@ -58,7 +78,78 @@ class HistoryScreen extends ConsumerWidget {
       );
     }
 
-    // 월별 지출 합계 (월 구분선용)
+    final filtered = entries.where(_matches).toList(growable: false);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('내역')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    key: const Key('history-search'),
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      hintText: '메모·카테고리 검색',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: _query.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.clear, size: 18),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _query = '');
+                              },
+                            ),
+                    ),
+                    onChanged: (v) => setState(() => _query = v),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                DropdownButton<Category?>(
+                  value: _categoryFilter,
+                  hint: const Text('전체'),
+                  underline: const SizedBox.shrink(),
+                  onChanged: (c) => setState(() => _categoryFilter = c),
+                  items: [
+                    const DropdownMenuItem(value: null, child: Text('전체')),
+                    for (final c in Category.values)
+                      DropdownMenuItem(value: c, child: Text(c.label)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: filtered.isEmpty
+                ? Center(
+                    child: Text(
+                      '조건에 맞는 기록이 없어요',
+                      style: textTheme.bodyMedium?.copyWith(color: muted),
+                    ),
+                  )
+                : ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    children: _timeline(filtered, now, textTheme, muted),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _timeline(
+    List<Entry> entries,
+    DateTime now,
+    TextTheme textTheme,
+    Color muted,
+  ) {
+    // 월별 지출 합계 (월 구분선용) — 표시 중인(필터된) 기록 기준.
     final monthExpense = <(int, int), int>{};
     for (final e in entries) {
       if (e.kind != EntryKind.expense) continue;
@@ -66,7 +157,6 @@ class HistoryScreen extends ConsumerWidget {
       monthExpense[key] = (monthExpense[key] ?? 0) + e.amountWon;
     }
 
-    // entries는 최신순 정렬 불변식이 있으므로 순회하며 헤더를 끼워 넣는다.
     final children = <Widget>[];
     (int, int)? currentMonth;
     DateTime? currentDay;
@@ -86,11 +176,7 @@ class HistoryScreen extends ConsumerWidget {
           ),
         );
       }
-      final day = DateTime(
-        e.occurredAt.year,
-        e.occurredAt.month,
-        e.occurredAt.day,
-      );
+      final day = DateTime(e.occurredAt.year, e.occurredAt.month, e.occurredAt.day);
       if (day != currentDay) {
         currentDay = day;
         children.add(
@@ -107,17 +193,10 @@ class HistoryScreen extends ConsumerWidget {
         EntryTile(
           entry: e,
           onTap: () => showRecordSheet(context, editing: e),
-          onLongPress: () => _confirmDelete(context, ref, e),
+          onLongPress: () => _confirmDelete(e),
         ),
       );
     }
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('내역')),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-        children: children,
-      ),
-    );
+    return children;
   }
 }

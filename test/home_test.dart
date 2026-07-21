@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:oikos/data/entry.dart';
 import 'package:oikos/insight/insight_engine.dart';
@@ -55,6 +56,12 @@ void main() {
       _expense(2000),
       _expense(3000),
     ]);
+    // 월 요약·최근 기록 아래라 뷰포트 밖일 수 있어 스크롤해서 확인.
+    await tester.scrollUntilVisible(
+      find.text('지금까지 3번 기록했어요'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('지금까지 3번 기록했어요'), findsOneWidget);
   });
 

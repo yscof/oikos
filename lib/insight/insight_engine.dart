@@ -56,6 +56,26 @@ final todayExpenseWonProvider = Provider<int>((ref) {
   return total;
 });
 
+/// 이번 달(달력 기준) 지출·수입 합계 (FR-403). 정산 기준일 설정은 후속(FR-601).
+int _monthSum(Ref ref, EntryKind kind) {
+  final entries = ref.watch(entryStoreProvider);
+  final now = ref.watch(clockProvider)();
+  final start = DateTime(now.year, now.month);
+  final end = DateTime(now.year, now.month + 1);
+  var total = 0;
+  for (final e in entries) {
+    if (e.kind != kind) continue;
+    if (e.occurredAt.isBefore(start) || !e.occurredAt.isBefore(end)) continue;
+    total += e.amountWon;
+  }
+  return total;
+}
+
+final monthExpenseWonProvider =
+    Provider<int>((ref) => _monthSum(ref, EntryKind.expense));
+final monthIncomeWonProvider =
+    Provider<int>((ref) => _monthSum(ref, EntryKind.income));
+
 int _dayOfYear(DateTime t) => t.difference(DateTime(t.year)).inDays + 1;
 
 bool _isColdStart(List<Entry> entries, DateTime now) {

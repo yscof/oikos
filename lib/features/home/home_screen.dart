@@ -6,6 +6,7 @@ import '../../core/clock.dart';
 import '../../core/formats.dart';
 import '../record/record_sheet.dart';
 import 'insight_card.dart';
+import 'monthly_summary.dart';
 import 'recent_entries.dart';
 
 /// 홈 = 인사이트 공간. 거래내역 표가 아니라 "내 금융 상태" 한 문장이 주인공.
@@ -49,6 +50,7 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     const SizedBox(height: 24),
                     const InsightCard(),
+                    const MonthlySummary(),
                     const SizedBox(height: 36),
                     const RecentEntries(),
                     const RecordCountMurmur(),

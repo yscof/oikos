@@ -85,6 +85,20 @@ void main() {
     expect(find.text('아쉬움'), findsOneWidget);
   });
 
+  testWidgets('금액 입력에 천 단위 콤마가 실시간으로 붙는다', (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.text('기록하기'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('amount-field')), '1500000');
+    await tester.pump();
+    expect(find.text('1,500,000'), findsOneWidget); // 입력 필드 표시
+
+    await tester.tap(find.widgetWithText(FilledButton, '저장'));
+    await tester.pumpAndSettle();
+    expect(find.text('1,500,000원'), findsOneWidget); // 저장된 금액
+  });
+
   testWidgets('수입에는 감정 칩이 없다', (tester) async {
     await pumpApp(tester);
     await tester.tap(find.text('기록하기'));

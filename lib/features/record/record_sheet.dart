@@ -19,6 +19,25 @@ Future<void> showRecordSheet(BuildContext context, {Entry? editing}) {
   );
 }
 
+/// 금액 입력 중 천 단위 콤마를 실시간으로 넣는다(FR-208). 숫자만 남기고 재그룹.
+class _ThousandsInputFormatter extends TextInputFormatter {
+  const _ThousandsInputFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.isEmpty) return const TextEditingValue();
+    final text = groupThousands(digits);
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+}
+
 class RecordSheet extends ConsumerStatefulWidget {
   const RecordSheet({super.key, this.editing});
 
@@ -53,7 +72,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
         editing.occurredAt.month,
         editing.occurredAt.day,
       );
-      _amountController.text = editing.amountWon.toString();
+      _amountController.text = groupThousands(editing.amountWon.toString());
       _memoController.text = editing.memo;
     }
   }
@@ -65,7 +84,8 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
     super.dispose();
   }
 
-  int get _amount => int.tryParse(_amountController.text) ?? 0;
+  int get _amount =>
+      int.tryParse(_amountController.text.replaceAll(',', '')) ?? 0;
 
   /// 추천순 카테고리. 금액·시각이 바뀔 때마다 실시간 재정렬.
   List<Category> _ranked() {
@@ -181,7 +201,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
               controller: _amountController,
               autofocus: true,
               keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              inputFormatters: const [_ThousandsInputFormatter()],
               style: Theme.of(context).textTheme.headlineMedium,
               decoration: const InputDecoration(
                 hintText: '0',

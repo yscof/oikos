@@ -11,6 +11,16 @@ String _group(int n) {
   return buf.toString();
 }
 
+/// 입력 필드용 — 숫자 문자열에 천 단위 콤마. '12000' → '12,000'
+String groupThousands(String digits) {
+  final buf = StringBuffer();
+  for (var i = 0; i < digits.length; i++) {
+    if (i > 0 && (digits.length - i) % 3 == 0) buf.write(',');
+    buf.write(digits[i]);
+  }
+  return buf.toString();
+}
+
 /// 3자리 콤마 + 원. 예) 12,000원
 String won(int amount) => '${amount < 0 ? '-' : ''}${_group(amount.abs())}원';
 

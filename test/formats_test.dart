@@ -15,6 +15,15 @@ void main() {
     });
   });
 
+  group('groupThousands', () {
+    test('입력용 천단위 콤마', () {
+      expect(groupThousands('0'), '0');
+      expect(groupThousands('12000'), '12,000');
+      expect(groupThousands('1500000'), '1,500,000');
+      expect(groupThousands(''), '');
+    });
+  });
+
   group('wonCompact', () {
     test('만 미만은 콤마 그대로', () {
       expect(wonCompact(9500), '9,500원');

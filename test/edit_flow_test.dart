@@ -25,7 +25,7 @@ void main() {
     // 기존 값 프리필
     final amountField =
         tester.widget<TextField>(find.byKey(const Key('amount-field')));
-    expect(amountField.controller!.text, '12000');
+    expect(amountField.controller!.text, '12,000'); // 천 단위 콤마 프리필
     final memoField =
         tester.widget<TextField>(find.byKey(const Key('memo-field')));
     expect(memoField.controller!.text, '점심');

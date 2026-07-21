@@ -1,7 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oikos/data/entry.dart';
 import 'package:oikos/insight/insight_engine.dart';
 
 import 'pump_app.dart';
+
+Entry _expense(int won, {DateTime? at}) {
+  final when = at ?? testNow;
+  return Entry(
+    id: 'e${when.microsecondsSinceEpoch}$won',
+    kind: EntryKind.expense,
+    amountWon: won,
+    category: Category.meal,
+    memo: '',
+    occurredAt: when,
+    createdAt: when,
+  );
+}
 
 void main() {
   testWidgets('빈 상태 홈: 콜드스타트 문장 + 빈 최근 기록 + 기록 버튼', (tester) async {
@@ -12,6 +26,25 @@ void main() {
     expect(find.text('아직 기록이 없어요'), findsOneWidget);
     expect(find.text('기록하기'), findsOneWidget);
     expect(find.text('7월 16일 목요일'), findsOneWidget);
+  });
+
+  testWidgets('오늘 지출이 있으면 오늘 소문을 먼저 보여준다', (tester) async {
+    await pumpApp(tester, entries: [
+      _expense(23000), // 오늘
+      _expense(40000, at: testNow.subtract(const Duration(days: 2))), // 이번 주, 오늘 아님
+    ]);
+
+    expect(find.text('오늘 지출 2만 3천원'), findsOneWidget);
+    expect(find.text('이번 주 지출 6만 3천원'), findsOneWidget);
+  });
+
+  testWidgets('오늘 지출이 없으면 오늘 소문은 감춘다', (tester) async {
+    await pumpApp(tester, entries: [
+      _expense(40000, at: testNow.subtract(const Duration(days: 2))),
+    ]);
+
+    expect(find.textContaining('오늘 지출'), findsNothing);
+    expect(find.text('이번 주 지출 4만원'), findsOneWidget);
   });
 
   testWidgets('설정으로 이동', (tester) async {

@@ -36,6 +36,7 @@ class InsightCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final result = ref.watch(insightResultProvider);
+    final todayWon = ref.watch(todayExpenseWonProvider);
     final weekWon = ref.watch(weekExpenseWonProvider);
     final textTheme = Theme.of(context).textTheme;
     final muted = Theme.of(context).colorScheme.onSurfaceVariant;
@@ -69,10 +70,19 @@ class InsightCard extends ConsumerWidget {
             ),
           ),
         const SizedBox(height: 20),
-        Text(
-          msg.weekMurmur(weekWon),
-          style: textTheme.labelLarge?.copyWith(color: muted),
-        ),
+        // 오늘을 먼저, 이번 주는 그 아래 — 습관의 단위는 '하루'다. 차트 아님.
+        if (todayWon > 0) ...[
+          Text(msg.todayMurmur(todayWon), style: textTheme.bodyLarge),
+          const SizedBox(height: 4),
+          Text(
+            msg.weekMurmur(weekWon),
+            style: textTheme.labelLarge?.copyWith(color: muted),
+          ),
+        ] else
+          Text(
+            msg.weekMurmur(weekWon),
+            style: textTheme.labelLarge?.copyWith(color: muted),
+          ),
       ],
     );
   }

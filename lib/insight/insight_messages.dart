@@ -45,7 +45,10 @@ String evidenceCountDelta(double baselineCount, int thisWeekCount) =>
 String evidenceWeekday(int percent, String weekday) =>
     '이렇게 읽었어요: 최근 4주 지출의 $percent%가 $weekday요일에 있었어요';
 
-/// 홈의 무채색 소문 한 줄.
+/// 홈의 무채색 소문 — 오늘. 습관은 '하루' 단위로 만들어지므로 오늘을 먼저 보여준다.
+String todayMurmur(int todayExpenseWon) => '오늘 지출 ${wonCompact(todayExpenseWon)}';
+
+/// 홈의 무채색 소문 한 줄 — 이번 주.
 String weekMurmur(int weekExpenseWon) => '이번 주 지출 ${wonCompact(weekExpenseWon)}';
 
 /// 톤 계약 기계 검증용 — 모든 템플릿을 실제 값으로 전개한다.
@@ -63,5 +66,6 @@ List<String> allSentencesForToneCheck() => [
       evidenceQuietWeek(90000, 60000),
       evidenceCountDelta(1.5, 5),
       evidenceWeekday(62, '금'),
+      todayMurmur(23000),
       weekMurmur(124000),
     ];

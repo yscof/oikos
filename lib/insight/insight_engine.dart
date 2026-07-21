@@ -39,6 +39,23 @@ final weekExpenseWonProvider = Provider<int>((ref) {
   return WeekStats.of(entries, weekStartOf(now)).totalWon;
 });
 
+/// 홈 소문(『오늘 지출 …』)용 오늘 지출 총액. 습관은 하루 단위로 만들어진다.
+final todayExpenseWonProvider = Provider<int>((ref) {
+  final entries = ref.watch(entryStoreProvider);
+  final now = ref.watch(clockProvider)();
+  final today = DateTime(now.year, now.month, now.day);
+  final tomorrow = today.add(const Duration(days: 1));
+  var total = 0;
+  for (final e in entries) {
+    if (e.kind != EntryKind.expense) continue;
+    if (e.occurredAt.isBefore(today) || !e.occurredAt.isBefore(tomorrow)) {
+      continue;
+    }
+    total += e.amountWon;
+  }
+  return total;
+});
+
 int _dayOfYear(DateTime t) => t.difference(DateTime(t.year)).inDays + 1;
 
 bool _isColdStart(List<Entry> entries, DateTime now) {

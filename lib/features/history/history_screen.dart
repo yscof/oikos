@@ -7,6 +7,7 @@ import '../../data/entry.dart';
 import '../../data/entry_store.dart';
 import '../home/recent_entries.dart' show EntryTile;
 import '../record/record_sheet.dart';
+import 'calendar_view.dart';
 
 /// 날짜 그룹 타임라인 + 검색·필터(FR-406). 의미(인사이트)는 홈에, 여기는 사실만.
 class HistoryScreen extends ConsumerStatefulWidget {
@@ -20,6 +21,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   final _searchController = TextEditingController();
   String _query = '';
   Category? _categoryFilter; // null = 전체
+  bool _calendar = false; // 목록 ↔ 캘린더 뷰 (FR-402/405)
 
   @override
   void dispose() {
@@ -81,8 +83,21 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final filtered = entries.where(_matches).toList(growable: false);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('내역')),
-      body: Column(
+      appBar: AppBar(
+        title: const Text('내역'),
+        actions: [
+          IconButton(
+            tooltip: _calendar ? '목록 보기' : '캘린더 보기',
+            icon: Icon(_calendar
+                ? Icons.view_list_outlined
+                : Icons.calendar_month_outlined),
+            onPressed: () => setState(() => _calendar = !_calendar),
+          ),
+        ],
+      ),
+      body: _calendar
+          ? const CalendarView()
+          : Column(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),

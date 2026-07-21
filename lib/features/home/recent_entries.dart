@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/formats.dart';
 import '../../data/entry.dart';
 import '../../data/entry_store.dart';
+import '../../insight/insight_messages.dart' as msg;
 
 /// 홈에 보여줄 최근 기록 3건.
 final recentEntriesProvider = Provider<List<Entry>>((ref) {
@@ -72,6 +73,27 @@ class RecentEntries extends ConsumerWidget {
         else
           for (final entry in recent) EntryTile(entry: entry),
       ],
+    );
+  }
+}
+
+/// 누적 기록 수를 조용히 되비추는 한 줄. 스트릭·배지가 아니라 데이터 반영.
+/// 기록이 하나도 없으면 감춘다.
+class RecordCountMurmur extends ConsumerWidget {
+  const RecordCountMurmur({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(entryStoreProvider).length;
+    if (count == 0) return const SizedBox.shrink();
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Padding(
+      padding: const EdgeInsets.only(top: 28),
+      child: Text(
+        msg.recordCountMurmur(count),
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: muted),
+      ),
     );
   }
 }

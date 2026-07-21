@@ -49,6 +49,20 @@ void main() {
     expect(find.text('이번 주 지출 4만원'), findsOneWidget);
   });
 
+  testWidgets('누적 기록 수를 조용히 되비춘다', (tester) async {
+    await pumpApp(tester, entries: [
+      _expense(1000),
+      _expense(2000),
+      _expense(3000),
+    ]);
+    expect(find.text('지금까지 3번 기록했어요'), findsOneWidget);
+  });
+
+  testWidgets('기록이 없으면 누적 기록 줄은 감춘다', (tester) async {
+    await pumpApp(tester);
+    expect(find.textContaining('지금까지'), findsNothing);
+  });
+
   testWidgets('설정으로 이동', (tester) async {
     await pumpApp(tester);
     await tester.tap(find.byTooltip('설정'));

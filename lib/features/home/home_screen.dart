@@ -51,6 +51,7 @@ class HomeScreen extends ConsumerWidget {
                     const InsightCard(),
                     const SizedBox(height: 36),
                     const RecentEntries(),
+                    const RecordCountMurmur(),
                   ],
                 ),
               ),

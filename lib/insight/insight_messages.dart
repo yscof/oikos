@@ -51,6 +51,9 @@ String todayMurmur(int todayExpenseWon) => '오늘 지출 ${wonCompact(todayExpe
 /// 홈의 무채색 소문 한 줄 — 이번 주.
 String weekMurmur(int weekExpenseWon) => '이번 주 지출 ${wonCompact(weekExpenseWon)}';
 
+/// 누적 기록 수를 되비추는 조용한 한 줄. 스트릭 아님 — 깨지지 않고 쌓이기만 한다.
+String recordCountMurmur(int count) => '지금까지 $count번 기록했어요';
+
 /// 톤 계약 기계 검증용 — 모든 템플릿을 실제 값으로 전개한다.
 List<String> allSentencesForToneCheck() => [
       for (final c in Category.of(EntryKind.expense)) ...[
@@ -68,4 +71,5 @@ List<String> allSentencesForToneCheck() => [
       evidenceWeekday(62, '금'),
       todayMurmur(23000),
       weekMurmur(124000),
+      recordCountMurmur(148),
     ];

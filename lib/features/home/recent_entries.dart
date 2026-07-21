@@ -65,7 +65,7 @@ class RecentEntries extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
-              '아직 기록이 없어요',
+              '첫 기록을 남기면 여기에 하나씩 쌓여요',
               style: textTheme.bodyMedium?.copyWith(color: muted),
             ),
           )

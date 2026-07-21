@@ -69,20 +69,19 @@ class InsightCard extends ConsumerWidget {
               ),
             ),
           ),
-        const SizedBox(height: 20),
-        // 오늘을 먼저, 이번 주는 그 아래 — 습관의 단위는 '하루'다. 차트 아님.
-        if (todayWon > 0) ...[
-          Text(msg.todayMurmur(todayWon), style: textTheme.bodyLarge),
-          const SizedBox(height: 4),
+        // 지출이 있을 때만 소문을 띄운다 — 첫 화면의 '0원'은 보여주지 않는다.
+        // 오늘을 먼저, 이번 주는 그 아래. 습관의 단위는 '하루'다. 차트 아님.
+        if (weekWon > 0) ...[
+          const SizedBox(height: 20),
+          if (todayWon > 0) ...[
+            Text(msg.todayMurmur(todayWon), style: textTheme.bodyLarge),
+            const SizedBox(height: 4),
+          ],
           Text(
             msg.weekMurmur(weekWon),
             style: textTheme.labelLarge?.copyWith(color: muted),
           ),
-        ] else
-          Text(
-            msg.weekMurmur(weekWon),
-            style: textTheme.labelLarge?.copyWith(color: muted),
-          ),
+        ],
       ],
     );
   }

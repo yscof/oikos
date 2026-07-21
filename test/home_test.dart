@@ -23,9 +23,11 @@ void main() {
 
     final coldStart = evaluateInsights([], testNow).headline.headline;
     expect(find.text(coldStart), findsOneWidget);
-    expect(find.text('아직 기록이 없어요'), findsOneWidget);
+    expect(find.text('첫 기록을 남기면 여기에 하나씩 쌓여요'), findsOneWidget);
     expect(find.text('기록하기'), findsOneWidget);
     expect(find.text('7월 16일 목요일'), findsOneWidget);
+    // 첫 화면엔 차가운 '0원' 소문을 띄우지 않는다.
+    expect(find.text('이번 주 지출 0원'), findsNothing);
   });
 
   testWidgets('오늘 지출이 있으면 오늘 소문을 먼저 보여준다', (tester) async {

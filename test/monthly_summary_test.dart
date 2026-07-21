@@ -1,5 +1,12 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oikos/core/clock.dart';
+import 'package:oikos/core/prefs.dart';
 import 'package:oikos/data/entry.dart';
+import 'package:oikos/data/entry_store.dart';
+import 'package:oikos/data/month_start_store.dart';
+import 'package:oikos/insight/insight_engine.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'pump_app.dart';
 
@@ -43,5 +50,29 @@ void main() {
     await pumpApp(tester);
     expect(find.text('지출'), findsNothing);
     expect(find.text('남은 금액'), findsNothing);
+  });
+
+  test('시작일을 25일로 두면 정산월 합계가 달라진다 (FR-601)', () async {
+    SharedPreferences.setMockInitialValues({monthStartDayKey: 25});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      clockProvider.overrideWithValue(() => DateTime(2026, 7, 28)),
+    ]);
+    addTearDown(container.dispose);
+
+    // 7/24 지출은 지난 정산월, 7/26 지출은 이번 정산월(7/25~8/25)
+    await container.read(entryStoreProvider.notifier).add(_e(
+          EntryKind.expense,
+          10000,
+          Category.meal,
+        ).copyWith(occurredAt: DateTime(2026, 7, 24)));
+    await container.read(entryStoreProvider.notifier).add(_e(
+          EntryKind.expense,
+          30000,
+          Category.meal,
+        ).copyWith(occurredAt: DateTime(2026, 7, 26)));
+
+    expect(container.read(monthExpenseWonProvider), 30000);
   });
 }

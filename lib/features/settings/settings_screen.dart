@@ -5,12 +5,44 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/entry_store.dart';
+import '../../data/month_start_store.dart';
 
 /// pubspec.yaml의 version과 함께 올린다.
 const String appVersion = '0.1.0';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  Future<void> _pickMonthStartDay(
+    BuildContext context,
+    WidgetRef ref,
+    int current,
+  ) async {
+    final picked = await showModalBottomSheet<int>(
+      context: context,
+      useSafeArea: true,
+      builder: (context) => ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+            child: Text(
+              '가계부 시작일',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          for (var d = 1; d <= 28; d++)
+            ListTile(
+              title: Text('매월 $d일'),
+              trailing: d == current ? const Icon(Icons.check) : null,
+              onTap: () => Navigator.of(context).pop(d),
+            ),
+        ],
+      ),
+    );
+    if (picked != null) {
+      await ref.read(monthStartDayProvider.notifier).set(picked);
+    }
+  }
 
   Future<void> _exportToClipboard(BuildContext context, WidgetRef ref) async {
     final entries = ref.read(entryStoreProvider);
@@ -64,6 +96,17 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('설정')),
       body: ListView(
         children: [
+          ListTile(
+            leading: const Icon(Icons.event_repeat_outlined),
+            title: const Text('가계부 시작일'),
+            subtitle: Text('매월 ${ref.watch(monthStartDayProvider)}일부터 이번 달로 계산해요'),
+            onTap: () => _pickMonthStartDay(
+              context,
+              ref,
+              ref.read(monthStartDayProvider),
+            ),
+          ),
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.ios_share_outlined),
             title: const Text('데이터 내보내기'),

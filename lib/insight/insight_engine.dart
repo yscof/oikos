@@ -8,8 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/clock.dart';
 import '../core/formats.dart';
+import '../core/month.dart';
 import '../data/entry.dart';
 import '../data/entry_store.dart';
+import '../data/month_start_store.dart';
 import 'baseline.dart';
 import 'insight.dart';
 import 'insight_messages.dart' as msg;
@@ -56,16 +58,19 @@ final todayExpenseWonProvider = Provider<int>((ref) {
   return total;
 });
 
-/// 이번 달(달력 기준) 지출·수입 합계 (FR-403). 정산 기준일 설정은 후속(FR-601).
+/// 이번 달 지출·수입 합계 (FR-403). 정산 기준일(FR-601)을 존중한다.
 int _monthSum(Ref ref, EntryKind kind) {
   final entries = ref.watch(entryStoreProvider);
   final now = ref.watch(clockProvider)();
-  final start = DateTime(now.year, now.month);
-  final end = DateTime(now.year, now.month + 1);
+  final startDay = ref.watch(monthStartDayProvider);
+  final range = financialMonthRange(now, startDay);
   var total = 0;
   for (final e in entries) {
     if (e.kind != kind) continue;
-    if (e.occurredAt.isBefore(start) || !e.occurredAt.isBefore(end)) continue;
+    if (e.occurredAt.isBefore(range.start) ||
+        !e.occurredAt.isBefore(range.end)) {
+      continue;
+    }
     total += e.amountWon;
   }
   return total;

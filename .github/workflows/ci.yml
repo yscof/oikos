@@ -12,6 +12,9 @@ jobs:
     env:
       # 저장소 secrets(UPLOAD_KEYSTORE_BASE64 등) 등록 전에는 AAB 단계가 스킵된다.
       HAS_KEYSTORE: ${{ secrets.UPLOAD_KEYSTORE_BASE64 != '' }}
+      # Supabase 값이 없으면 빈 문자열 → 앱은 오프라인 모드로 빌드된다.
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -45,7 +48,10 @@ jobs:
             echo "keyAlias=upload"
           } > android/key.properties
 
-      - run: flutter build apk --release
+      - name: Build APK
+        run: flutter build apk --release
+          --dart-define=SUPABASE_URL=$SUPABASE_URL
+          --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
       # 안드로이드 기기 사이드로드 테스트용
       - uses: actions/upload-artifact@v4
@@ -57,6 +63,8 @@ jobs:
       - name: Build appbundle
         if: env.HAS_KEYSTORE == 'true'
         run: flutter build appbundle --release
+          --dart-define=SUPABASE_URL=$SUPABASE_URL
+          --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
       - name: Upload AAB
         if: env.HAS_KEYSTORE == 'true'

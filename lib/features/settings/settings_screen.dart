@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/formats.dart';
+import '../../core/supabase_config.dart';
 import '../../core/thousands_formatter.dart';
+import '../../data/auth.dart';
 import '../../data/budget_store.dart';
 import '../../data/entry_store.dart';
 import '../../data/month_start_store.dart';
@@ -169,6 +171,14 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('모든 데이터 삭제'),
             onTap: () => _confirmClearAll(context, ref),
           ),
+          if (supabaseConfigured) ...[
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout_outlined),
+              title: const Text('로그아웃'),
+              onTap: () => ref.read(authServiceProvider).signOut(),
+            ),
+          ],
           const Divider(),
           ListTile(
             leading: const Icon(Icons.description_outlined),

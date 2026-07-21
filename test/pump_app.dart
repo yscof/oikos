@@ -17,10 +17,12 @@ Future<void> pumpApp(
   WidgetTester tester, {
   DateTime? now,
   List<Entry>? entries,
+  Map<String, Object>? extraPrefs,
 }) async {
   SharedPreferences.setMockInitialValues({
     if (entries != null)
       entriesPrefsKey: jsonEncode([for (final e in entries) e.toJson()]),
+    ...?extraPrefs,
   });
   final prefs = await SharedPreferences.getInstance();
   await tester.pumpWidget(

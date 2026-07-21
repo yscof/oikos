@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/clock.dart';
 import '../../core/formats.dart';
 import '../record/record_sheet.dart';
+import 'budget_progress.dart';
 import 'insight_card.dart';
 import 'monthly_summary.dart';
 import 'recent_entries.dart';
@@ -51,6 +52,7 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: 24),
                     const InsightCard(),
                     const MonthlySummary(),
+                    const BudgetProgress(),
                     const SizedBox(height: 36),
                     const RecentEntries(),
                     const RecordCountMurmur(),

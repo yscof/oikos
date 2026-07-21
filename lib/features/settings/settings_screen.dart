@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/formats.dart';
+import '../../core/thousands_formatter.dart';
+import '../../data/budget_store.dart';
 import '../../data/entry_store.dart';
 import '../../data/month_start_store.dart';
 
@@ -41,6 +44,45 @@ class SettingsScreen extends ConsumerWidget {
     );
     if (picked != null) {
       await ref.read(monthStartDayProvider.notifier).set(picked);
+    }
+  }
+
+  Future<void> _editBudget(BuildContext context, WidgetRef ref, int current) async {
+    final controller = TextEditingController(
+      text: current > 0 ? groupThousands(current.toString()) : '',
+    );
+    final result = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('이번 달 예산'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: const [ThousandsInputFormatter()],
+          decoration: const InputDecoration(
+            hintText: '0',
+            suffixText: '원',
+            helperText: '0으로 두면 예산을 쓰지 않아요',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () {
+              final v = int.tryParse(controller.text.replaceAll(',', '')) ?? 0;
+              Navigator.of(context).pop(v);
+            },
+            child: const Text('저장'),
+          ),
+        ],
+      ),
+    );
+    if (result != null) {
+      await ref.read(monthBudgetProvider.notifier).set(result);
     }
   }
 
@@ -106,6 +148,15 @@ class SettingsScreen extends ConsumerWidget {
               ref.read(monthStartDayProvider),
             ),
           ),
+          Builder(builder: (context) {
+            final budget = ref.watch(monthBudgetProvider);
+            return ListTile(
+              leading: const Icon(Icons.account_balance_wallet_outlined),
+              title: const Text('이번 달 예산'),
+              subtitle: Text(budget > 0 ? won(budget) : '설정 안 함'),
+              onTap: () => _editBudget(context, ref, budget),
+            );
+          }),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.ios_share_outlined),

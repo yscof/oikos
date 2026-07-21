@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/clock.dart';
 import '../../core/formats.dart';
+import '../../core/thousands_formatter.dart';
 import '../../data/entry.dart';
 import '../../data/entry_store.dart';
 import '../../insight/category_suggester.dart';
@@ -17,25 +17,6 @@ Future<void> showRecordSheet(BuildContext context, {Entry? editing}) {
     useSafeArea: true,
     builder: (context) => RecordSheet(editing: editing),
   );
-}
-
-/// 금액 입력 중 천 단위 콤마를 실시간으로 넣는다(FR-208). 숫자만 남기고 재그룹.
-class _ThousandsInputFormatter extends TextInputFormatter {
-  const _ThousandsInputFormatter();
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
-    if (digits.isEmpty) return const TextEditingValue();
-    final text = groupThousands(digits);
-    return TextEditingValue(
-      text: text,
-      selection: TextSelection.collapsed(offset: text.length),
-    );
-  }
 }
 
 class RecordSheet extends ConsumerStatefulWidget {
@@ -201,7 +182,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
               controller: _amountController,
               autofocus: true,
               keyboardType: TextInputType.number,
-              inputFormatters: const [_ThousandsInputFormatter()],
+              inputFormatters: const [ThousandsInputFormatter()],
               style: Theme.of(context).textTheme.headlineMedium,
               decoration: const InputDecoration(
                 hintText: '0',

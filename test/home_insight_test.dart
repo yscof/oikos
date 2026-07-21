@@ -48,6 +48,7 @@ void main() {
     await pumpApp(tester);
     final expected = evaluateInsights([], testNow).headline.headline;
     expect(find.text(expected), findsOneWidget);
-    expect(find.text('이번 주 지출 0원'), findsOneWidget);
+    // 첫 화면엔 차가운 '0원' 소문을 띄우지 않는다.
+    expect(find.text('이번 주 지출 0원'), findsNothing);
   });
 }

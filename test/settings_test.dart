@@ -64,7 +64,7 @@ void main() {
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('아직 기록이 없어요'), findsOneWidget);
+    expect(find.text('첫 기록을 남기면 여기에 하나씩 쌓여요'), findsOneWidget);
   });
 
   testWidgets('라이선스·버전·로컬 저장 안내가 보인다', (tester) async {

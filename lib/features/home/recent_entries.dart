@@ -26,6 +26,11 @@ class EntryTile extends StatelessWidget {
     final isIncome = entry.kind == EntryKind.income;
     final amountText =
         isIncome ? '+${won(entry.amountWon)}' : won(entry.amountWon);
+    // 감정 라벨 · 메모를 한 줄로 — 둘 다 없으면 부제 없음.
+    final subtitleParts = [
+      if (entry.emotion != null) entry.emotion!.label,
+      if (entry.memo.isNotEmpty) entry.memo,
+    ];
     return ListTile(
       onTap: onTap,
       onLongPress: onLongPress,
@@ -36,9 +41,10 @@ class EntryTile extends StatelessWidget {
         child: Icon(entry.category.icon, size: 20),
       ),
       title: Text(entry.category.label),
-      subtitle: entry.memo.isEmpty
+      subtitle: subtitleParts.isEmpty
           ? null
-          : Text(entry.memo, maxLines: 1, overflow: TextOverflow.ellipsis),
+          : Text(subtitleParts.join(' · '),
+              maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: Text(
         amountText,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(

@@ -33,6 +33,9 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
 
   /// 사용자가 직접 고른 칩. null이면 추천 1위가 자동 선택된다.
   Category? _picked;
+
+  /// 지출의 느낌 (선택). null이면 남기지 않은 것.
+  Emotion? _emotion;
   DateTime? _pickedDay; // null = 오늘
   final _amountController = TextEditingController();
   final _memoController = TextEditingController();
@@ -44,6 +47,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
     if (editing != null) {
       _kind = editing.kind;
       _picked = editing.category;
+      _emotion = editing.emotion;
       _pickedDay = DateTime(
         editing.occurredAt.year,
         editing.occurredAt.month,
@@ -83,6 +87,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
     final now = ref.read(clockProvider)();
     final editing = widget.editing;
     final store = ref.read(entryStoreProvider.notifier);
+    final emotion = _kind == EntryKind.expense ? _emotion : null;
     if (editing != null) {
       final day = _pickedDay!;
       await store.update(editing.copyWith(
@@ -90,6 +95,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
         amountWon: _amount,
         category: _effectiveCategory(_ranked()),
         memo: _memoController.text.trim(),
+        emotion: emotion,
         occurredAt: DateTime(day.year, day.month, day.day,
             editing.occurredAt.hour, editing.occurredAt.minute),
       ));
@@ -104,6 +110,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
         amountWon: _amount,
         category: _effectiveCategory(_ranked()),
         memo: _memoController.text.trim(),
+        emotion: emotion,
         occurredAt: occurredAt,
         createdAt: now,
       ));
@@ -157,6 +164,7 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
                   onSelectionChanged: (selection) => setState(() {
                     _kind = selection.single;
                     _picked = null; // 새 kind의 추천 1위로 되돌린다
+                    if (_kind == EntryKind.income) _emotion = null;
                   }),
                 ),
                 const Spacer(),
@@ -207,6 +215,24 @@ class _RecordSheetState extends ConsumerState<RecordSheet> {
               ),
               textInputAction: TextInputAction.done,
             ),
+            if (_kind == EntryKind.expense) ...[
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final e in Emotion.values)
+                    ChoiceChip(
+                      label: Text(e.label),
+                      avatar: Icon(e.icon, size: 18),
+                      selected: _emotion == e,
+                      showCheckmark: false,
+                      // 다시 누르면 해제 — 남길지 말지는 온전히 선택.
+                      onSelected: (on) =>
+                          setState(() => _emotion = on ? e : null),
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 12),
             FilledButton(
               onPressed: _amount > 0 ? _save : null,

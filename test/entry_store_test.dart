@@ -126,4 +126,43 @@ void main() {
     final e = entry().copyWith(kind: EntryKind.income);
     expect(e.category, Category.incomeEtc);
   });
+
+  test('감정 태그: 영속 왕복', () async {
+    SharedPreferences.setMockInitialValues({});
+    final c1 = await containerWithPrefs();
+    await c1.read(entryStoreProvider.notifier).add(
+          entry().copyWith(emotion: Emotion.regret),
+        );
+    final c2 = await containerWithPrefs();
+    expect(c2.read(entryStoreProvider).single.emotion, Emotion.regret);
+  });
+
+  test('감정 없는 구버전 JSON → null (하위호환)', () async {
+    final json = entry().toJson();
+    expect(json.containsKey('emotion'), isFalse); // 없으면 아예 쓰지 않는다
+    SharedPreferences.setMockInitialValues({
+      entriesPrefsKey: jsonEncode([json]),
+    });
+    final c = await containerWithPrefs();
+    expect(c.read(entryStoreProvider).single.emotion, isNull);
+  });
+
+  test('미지 감정 문자열 → null', () async {
+    SharedPreferences.setMockInitialValues({
+      entriesPrefsKey: jsonEncode([entry().toJson()..['emotion'] = 'euphoria']),
+    });
+    final c = await containerWithPrefs();
+    expect(c.read(entryStoreProvider).single.emotion, isNull);
+  });
+
+  test('copyWith로 감정 해제(null) 가능, 미지정은 유지', () {
+    final tagged = entry().copyWith(emotion: Emotion.satisfied);
+    expect(tagged.copyWith(memo: 'x').emotion, Emotion.satisfied); // 유지
+    expect(tagged.copyWith(emotion: null).emotion, isNull); // 해제
+  });
+
+  test('수입 전환 시 감정은 버려진다', () {
+    final e = entry().copyWith(emotion: Emotion.mindless, kind: EntryKind.income);
+    expect(e.emotion, isNull);
+  });
 }

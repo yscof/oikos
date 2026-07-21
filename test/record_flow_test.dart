@@ -68,4 +68,31 @@ void main() {
 
     expect(find.text('아직 기록이 없어요'), findsOneWidget);
   });
+
+  testWidgets('감정 태그(선택)를 남기면 기록에 함께 보인다', (tester) async {
+    await pumpApp(tester);
+
+    await tester.tap(find.text('기록하기'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('amount-field')), '9000');
+    await tester.pump();
+    await tester.tap(find.widgetWithText(ChoiceChip, '아쉬움'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, '저장'));
+    await tester.pumpAndSettle();
+
+    // 시트가 닫힌 뒤 홈 최근 기록의 부제로 감정이 보인다.
+    expect(find.text('아쉬움'), findsOneWidget);
+  });
+
+  testWidgets('수입에는 감정 칩이 없다', (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.text('기록하기'));
+    await tester.pumpAndSettle();
+
+    expect(find.widgetWithText(ChoiceChip, '아쉬움'), findsOneWidget);
+    await tester.tap(find.text('수입'));
+    await tester.pump();
+    expect(find.widgetWithText(ChoiceChip, '아쉬움'), findsNothing);
+  });
 }

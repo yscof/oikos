@@ -198,7 +198,10 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              '모든 데이터는 이 기기에만 저장됩니다',
+              // 계정 빌드는 인증 정보(이메일)가 서버에 저장되므로 문구가 달라진다.
+              supabaseConfigured
+                  ? '기록은 이 기기에만, 계정 정보는 로그인 서버에 저장됩니다'
+                  : '모든 데이터는 이 기기에만 저장됩니다',
               textAlign: TextAlign.center,
               style: textTheme.bodySmall?.copyWith(color: muted),
             ),

@@ -28,7 +28,14 @@ jobs:
           cache: true
 
       - run: flutter pub get
-      - run: flutter build web --release --base-href /oikos/app/
+      # 시크릿이 없으면 빈 문자열 → 오프라인 빌드(로그인 없음). 등록하면 로그인이 켜진다.
+      - run: |
+          flutter build web --release --base-href /oikos/app/ \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Assemble site (docs + web app)
         run: |

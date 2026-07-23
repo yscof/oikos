@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../data/auth.dart';
+import 'password_rules.dart';
 
 /// 로그인 / 가입 화면 (FR-101·102·103). Supabase가 설정된 빌드에서만 뜬다.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -28,6 +29,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submit() async {
+    if (_signUp) {
+      final ruleError = validatePassword(_password.text);
+      if (ruleError != null) {
+        setState(() {
+          _error = ruleError;
+          _notice = null;
+        });
+        return;
+      }
+    }
     setState(() {
       _busy = true;
       _error = null;
@@ -102,9 +113,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   key: const Key('password-field'),
                   controller: _password,
                   obscureText: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: '비밀번호',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    helperText: _signUp ? passwordRulesHint : null,
                   ),
                 ),
                 if (_error != null) ...[

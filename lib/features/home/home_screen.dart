@@ -39,16 +39,6 @@ class HomeScreen extends ConsumerWidget {
                     icon: const Icon(Icons.receipt_long_outlined),
                     onPressed: () => context.push('/history'),
                   ),
-                  IconButton(
-                    tooltip: '통계',
-                    icon: const Icon(Icons.bar_chart_outlined),
-                    onPressed: () => context.push('/stats'),
-                  ),
-                  IconButton(
-                    tooltip: '설정',
-                    icon: const Icon(Icons.settings_outlined),
-                    onPressed: () => context.push('/settings'),
-                  ),
                 ],
               ),
               Expanded(

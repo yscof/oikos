@@ -72,8 +72,7 @@ void main() {
 
   testWidgets('설정으로 이동', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.byTooltip('설정'));
-    await tester.pumpAndSettle();
+    await openSettings(tester);
     expect(find.text('모든 데이터는 이 기기에만 저장됩니다'), findsOneWidget);
   });
 

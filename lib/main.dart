@@ -9,6 +9,7 @@ import 'app/theme.dart';
 import 'core/prefs.dart';
 import 'core/supabase_config.dart';
 import 'data/auth.dart';
+import 'data/theme_mode_store.dart';
 import 'features/auth/login_screen.dart';
 
 Future<void> main() async {
@@ -50,34 +51,38 @@ class _OikosAppState extends ConsumerState<OikosApp> {
 
   @override
   Widget build(BuildContext context) {
+    final mode = ref.watch(themeModeProvider);
     // 미설정(오프라인) 빌드는 지금까지처럼 곧장 앱으로 — 로그인 게이트 없음.
-    if (!supabaseConfigured) return _routerApp();
+    if (!supabaseConfigured) return _routerApp(mode);
 
     // 설정된 빌드: 로그인 상태에 따라 로그인 화면 ↔ 앱.
     final auth = ref.watch(authStateProvider);
     return auth.when(
       data: (session) =>
-          session == null ? _loginApp() : _routerApp(),
+          session == null ? _loginApp(mode) : _routerApp(mode),
       loading: () => MaterialApp(
         theme: _light,
         darkTheme: _dark,
+        themeMode: mode,
         home: const Scaffold(body: Center(child: CircularProgressIndicator())),
       ),
-      error: (_, _) => _loginApp(),
+      error: (_, _) => _loginApp(mode),
     );
   }
 
-  Widget _routerApp() => MaterialApp.router(
+  Widget _routerApp(ThemeMode mode) => MaterialApp.router(
         title: '오이코스',
         theme: _light,
         darkTheme: _dark,
+        themeMode: mode,
         routerConfig: _router,
       );
 
-  Widget _loginApp() => MaterialApp(
+  Widget _loginApp(ThemeMode mode) => MaterialApp(
         title: '오이코스',
         theme: _light,
         darkTheme: _dark,
+        themeMode: mode,
         home: const LoginScreen(),
       );
 }

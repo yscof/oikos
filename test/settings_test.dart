@@ -29,8 +29,7 @@ void main() {
       exp('a', 12000, DateTime(2026, 7, 15, 12)),
       exp('b', 8000, DateTime(2026, 7, 16, 9)),
     ]);
-    await tester.tap(find.byTooltip('설정'));
-    await tester.pumpAndSettle();
+    await openSettings(tester);
     await tester.tap(find.text('데이터 내보내기'));
     await tester.pumpAndSettle();
 
@@ -45,8 +44,7 @@ void main() {
 
   testWidgets('기록이 없으면 내보내기가 조용히 알려준다', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.byTooltip('설정'));
-    await tester.pumpAndSettle();
+    await openSettings(tester);
     await tester.tap(find.text('데이터 내보내기'));
     await tester.pumpAndSettle();
     expect(find.text('아직 내보낼 기록이 없어요'), findsOneWidget);
@@ -54,8 +52,7 @@ void main() {
 
   testWidgets('모든 데이터 삭제 → 확인 → 빈 상태', (tester) async {
     await pumpApp(tester, entries: [exp('a', 12000, DateTime(2026, 7, 15, 12))]);
-    await tester.tap(find.byTooltip('설정'));
-    await tester.pumpAndSettle();
+    await openSettings(tester);
 
     await tester.tap(find.text('모든 데이터 삭제'));
     await tester.pumpAndSettle();
@@ -64,13 +61,13 @@ void main() {
 
     await tester.pageBack();
     await tester.pumpAndSettle();
+    await openTab(tester, '가계부');
     expect(find.text('첫 기록을 남기면 여기에 하나씩 쌓여요'), findsOneWidget);
   });
 
   testWidgets('라이선스·버전·로컬 저장 안내가 보인다', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.byTooltip('설정'));
-    await tester.pumpAndSettle();
+    await openSettings(tester);
 
     expect(find.text('오픈소스 라이선스'), findsOneWidget);
     expect(find.text('버전'), findsOneWidget);

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../data/auth.dart';
+import 'auth_messages.dart';
 import 'password_rules.dart';
 
 /// 로그인 / 가입 화면 (FR-101·102·103). Supabase가 설정된 빌드에서만 뜬다.
@@ -56,7 +57,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       // 성공하면 authStateProvider가 홈으로 전환한다.
     } on AuthException catch (e) {
-      if (mounted) setState(() => _error = e.message);
+      if (mounted) setState(() => _error = authErrorMessage(e));
     } catch (_) {
       if (mounted) setState(() => _error = '문제가 생겼어요. 잠시 후 다시 시도해 주세요.');
     } finally {
@@ -72,6 +73,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await ref.read(authServiceProvider).resetPassword(_email.text);
       if (mounted) setState(() => _notice = '비밀번호 재설정 메일을 보냈어요.');
+    } on AuthException catch (e) {
+      if (mounted) setState(() => _error = authErrorMessage(e));
     } catch (_) {
       if (mounted) setState(() => _error = '메일 발송에 실패했어요.');
     }

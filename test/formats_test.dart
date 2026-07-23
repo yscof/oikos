@@ -24,24 +24,6 @@ void main() {
     });
   });
 
-  group('wonCompact', () {
-    test('만 미만은 콤마 그대로', () {
-      expect(wonCompact(9500), '9,500원');
-      expect(wonCompact(0), '0원');
-    });
-
-    test('만/천 축약', () {
-      expect(wonCompact(124000), '12만 4천원');
-      expect(wonCompact(420000), '42만원');
-      expect(wonCompact(10000), '1만원');
-    });
-
-    test('천 미만 자리는 버린다', () {
-      expect(wonCompact(124567), '12만 4천원');
-      expect(wonCompact(12345678), '1,234만 5천원');
-    });
-  });
-
   group('dayLabel', () {
     final now = DateTime(2026, 7, 16, 14, 30);
 

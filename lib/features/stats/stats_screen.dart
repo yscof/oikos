@@ -51,7 +51,7 @@ class StatsScreen extends ConsumerWidget {
           : ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               children: [
-                Text('이번 달 지출 ${wonCompact(total)}',
+                Text('이번 달 지출 ${won(total)}',
                     style: textTheme.titleMedium),
                 const SizedBox(height: 4),
                 Text('카테고리별 비율', style: textTheme.labelLarge?.copyWith(color: muted)),
@@ -101,7 +101,7 @@ class _CategoryBar extends StatelessWidget {
                   style: textTheme.bodyMedium
                       ?.copyWith(color: scheme.onSurfaceVariant)),
               const SizedBox(width: 8),
-              Text(wonCompact(amount), style: textTheme.bodyMedium),
+              Text(won(amount), style: textTheme.bodyMedium),
             ],
           ),
           const SizedBox(height: 6),

@@ -185,7 +185,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 24, bottom: 4),
             child: Text(
-              '$yearPrefix${month.$2}월 · 지출 ${wonCompact(monthExpense[month] ?? 0)}',
+              '$yearPrefix${month.$2}월 · 지출 ${won(monthExpense[month] ?? 0)}',
               style: textTheme.labelLarge?.copyWith(color: muted),
             ),
           ),

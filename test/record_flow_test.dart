@@ -28,7 +28,7 @@ void main() {
     // 시트가 조용히 닫히고 홈 최근 기록에 반영
     expect(find.byKey(const Key('amount-field')), findsNothing);
     expect(find.text('식사'), findsOneWidget);
-    expect(find.text('12,000원'), findsOneWidget);
+    expect(find.text('12,000원'), findsWidgets); // 월 요약 + 최근 기록
   });
 
   testWidgets('수입 전환 시 수입 카테고리로 바뀐다', (tester) async {
@@ -96,7 +96,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(FilledButton, '저장'));
     await tester.pumpAndSettle();
-    expect(find.text('1,500,000원'), findsOneWidget); // 저장된 금액
+    expect(find.text('1,500,000원'), findsWidgets); // 월 요약 + 저장된 금액
   });
 
   testWidgets('수입에는 감정 칩이 없다', (tester) async {

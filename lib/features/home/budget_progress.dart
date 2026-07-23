@@ -46,7 +46,7 @@ class BudgetProgress extends ConsumerWidget {
             children: [
               Text('이번 달 예산',
                   style: textTheme.labelLarge?.copyWith(color: muted)),
-              Text('${wonCompact(spent)} / ${wonCompact(budget)}',
+              Text('${won(spent)} / ${won(budget)}',
                   style: textTheme.labelLarge),
             ],
           ),

@@ -46,10 +46,10 @@ String evidenceWeekday(int percent, String weekday) =>
     '이렇게 읽었어요: 최근 4주 지출의 $percent%가 $weekday요일에 있었어요';
 
 /// 홈의 무채색 소문 — 오늘. 습관은 '하루' 단위로 만들어지므로 오늘을 먼저 보여준다.
-String todayMurmur(int todayExpenseWon) => '오늘 지출 ${wonCompact(todayExpenseWon)}';
+String todayMurmur(int todayExpenseWon) => '오늘 지출 ${won(todayExpenseWon)}';
 
 /// 홈의 무채색 소문 한 줄 — 이번 주.
-String weekMurmur(int weekExpenseWon) => '이번 주 지출 ${wonCompact(weekExpenseWon)}';
+String weekMurmur(int weekExpenseWon) => '이번 주 지출 ${won(weekExpenseWon)}';
 
 /// 누적 기록 수를 되비추는 조용한 한 줄. 스트릭 아님 — 깨지지 않고 쌓이기만 한다.
 String recordCountMurmur(int count) => '지금까지 $count번 기록했어요';

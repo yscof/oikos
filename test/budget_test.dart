@@ -44,7 +44,7 @@ void main() {
         entries: [_e(60000)], extraPrefs: {monthBudgetKey: 300000});
 
     expect(find.text('이번 달 예산'), findsOneWidget);
-    expect(find.text('6만원 / 30만원'), findsOneWidget);
+    expect(find.text('60,000원 / 300,000원'), findsOneWidget);
   });
 
   testWidgets('80% 넘으면 담백한 인앱 알림', (tester) async {

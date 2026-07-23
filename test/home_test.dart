@@ -37,8 +37,8 @@ void main() {
       _expense(40000, at: testNow.subtract(const Duration(days: 2))), // 이번 주, 오늘 아님
     ]);
 
-    expect(find.text('오늘 지출 2만 3천원'), findsOneWidget);
-    expect(find.text('이번 주 지출 6만 3천원'), findsOneWidget);
+    expect(find.text('오늘 지출 23,000원'), findsOneWidget);
+    expect(find.text('이번 주 지출 63,000원'), findsOneWidget);
   });
 
   testWidgets('오늘 지출이 없으면 오늘 소문은 감춘다', (tester) async {
@@ -47,7 +47,7 @@ void main() {
     ]);
 
     expect(find.textContaining('오늘 지출'), findsNothing);
-    expect(find.text('이번 주 지출 4만원'), findsOneWidget);
+    expect(find.text('이번 주 지출 40,000원'), findsOneWidget);
   });
 
   testWidgets('누적 기록 수를 조용히 되비춘다', (tester) async {

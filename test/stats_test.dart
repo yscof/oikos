@@ -22,7 +22,7 @@ void main() {
 
     await openTab(tester, '통계');
 
-    expect(find.text('이번 달 지출 10만원'), findsOneWidget);
+    expect(find.text('이번 달 지출 100,000원'), findsOneWidget);
     expect(find.text('60%'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget);
     expect(find.text('식사'), findsOneWidget);

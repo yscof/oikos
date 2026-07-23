@@ -36,7 +36,7 @@ class MonthlySummary extends ConsumerWidget {
           ),
           const SizedBox(height: 2),
           // 남은 금액이 마이너스여도 빨간색을 쓰지 않는다 — 편안함이 기본값.
-          Text(wonCompact(amount), style: textTheme.titleMedium),
+          Text(won(amount), style: textTheme.titleMedium),
         ],
       );
     }

@@ -47,7 +47,7 @@ void main() {
     expect(find.text('15,000원'), findsOneWidget);
     expect(find.text('식사'), findsNothing);
     expect(find.text('12,000원'), findsNothing);
-    expect(find.text('7월 · 지출 1만 5천원'), findsOneWidget);
+    expect(find.text('7월 · 지출 15,000원'), findsOneWidget);
   });
 
   testWidgets('수정 시트에서 날짜 라벨은 기록의 날짜를 보여준다', (tester) async {

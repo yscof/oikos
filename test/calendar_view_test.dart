@@ -40,7 +40,7 @@ void main() {
     expect(find.text('2026년 7월'), findsOneWidget);
     // 기본 선택일 = 오늘 → 그날 지출 요약
     expect(find.text('오늘'), findsOneWidget);
-    expect(find.text('지출 1만 2천원'), findsOneWidget);
+    expect(find.text('지출 12,000원'), findsOneWidget);
 
     // 10일을 고르면 그날 요약으로 바뀐다
     await tester.tap(find.text('10'));

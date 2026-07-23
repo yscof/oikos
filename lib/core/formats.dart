@@ -24,16 +24,6 @@ String groupThousands(String digits) {
 /// 3자리 콤마 + 원. 예) 12,000원
 String won(int amount) => '${amount < 0 ? '-' : ''}${_group(amount.abs())}원';
 
-/// 요약 문장용 만/천 축약 — 천 미만 자리는 버린다(어림 표현).
-/// 예) 124,000 → 12만 4천원, 420,000 → 42만원, 9,500 → 9,500원
-String wonCompact(int amount) {
-  if (amount < 10000) return won(amount);
-  final man = amount ~/ 10000;
-  final thousand = (amount % 10000) ~/ 1000;
-  if (thousand == 0) return '${_group(man)}만원';
-  return '${_group(man)}만 $thousand천원';
-}
-
 /// 소수 1자리, 불필요한 .0은 지운다. 예) 1.5 → 1.5, 2.0 → 2
 String num1(double v) => v.toStringAsFixed(1).replaceFirst(RegExp(r'\.0$'), '');
 

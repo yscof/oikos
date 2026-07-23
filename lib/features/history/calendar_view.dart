@@ -181,8 +181,8 @@ class _DaySummary extends ConsumerWidget {
         const SizedBox(height: 4),
         Text(
           income > 0
-              ? '지출 ${wonCompact(expense)} · 수입 ${wonCompact(income)}'
-              : '지출 ${wonCompact(expense)}',
+              ? '지출 ${won(expense)} · 수입 ${won(income)}'
+              : '지출 ${won(expense)}',
           style: textTheme.labelLarge?.copyWith(color: muted),
         ),
         const SizedBox(height: 8),

@@ -32,8 +32,8 @@ void main() {
     expect(find.text('지출'), findsOneWidget);
     expect(find.text('수입'), findsOneWidget);
     expect(find.text('남은 금액'), findsOneWidget);
-    expect(find.text('5만원'), findsOneWidget); // 지출 30000+20000
-    expect(find.text('295만원'), findsOneWidget); // 남은 300만-5만
+    expect(find.text('50,000원'), findsOneWidget); // 지출 30000+20000
+    expect(find.text('2,950,000원'), findsOneWidget); // 남은 300만-5만
   });
 
   testWidgets('수입이 없으면 지출만 담백하게', (tester) async {

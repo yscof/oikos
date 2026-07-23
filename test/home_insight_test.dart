@@ -34,7 +34,7 @@ void main() {
 
     const headline = '이번 주 배달 소비가 평소보다 조금 많았어요';
     expect(find.text(headline), findsOneWidget);
-    expect(find.text('이번 주 지출 3만 5천원'), findsOneWidget); // 무채색 소문
+    expect(find.text('이번 주 지출 35,000원'), findsOneWidget); // 무채색 소문
 
     await tester.tap(find.text(headline));
     await tester.pumpAndSettle();

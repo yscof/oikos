@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'app/mobile_frame.dart';
 import 'app/router.dart';
 import 'app/theme.dart';
 import 'core/prefs.dart';
@@ -64,17 +65,22 @@ class _OikosAppState extends ConsumerState<OikosApp> {
         theme: _light,
         darkTheme: _dark,
         themeMode: mode,
+        builder: _frame,
         home: const Scaffold(body: Center(child: CircularProgressIndicator())),
       ),
       error: (_, _) => _loginApp(mode),
     );
   }
 
+  static Widget _frame(BuildContext context, Widget? child) =>
+      MobileFrame(child: child);
+
   Widget _routerApp(ThemeMode mode) => MaterialApp.router(
         title: '오이코스',
         theme: _light,
         darkTheme: _dark,
         themeMode: mode,
+        builder: _frame,
         routerConfig: _router,
       );
 
@@ -83,6 +89,7 @@ class _OikosAppState extends ConsumerState<OikosApp> {
         theme: _light,
         darkTheme: _dark,
         themeMode: mode,
+        builder: _frame,
         home: const LoginScreen(),
       );
 }

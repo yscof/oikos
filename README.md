@@ -71,4 +71,4 @@ lib/
 - **M6 — 3초 폴리시**: 커스텀 금액 키패드, 다크모드/타이포 패스, 앱 아이콘, iOS 빌드 워크플로
 - **M7 — 스토어 트랙**: Play Console 등록·폐쇄 테스트, 개인정보처리방침 페이지 공개, iOS는 Apple Developer 가입 후 결정
 
-요구사항 명세서(FR/NFR 정본)는 [docs/SRS.md](docs/SRS.md), 전체 구현 계획과 근거는 [docs/PLAN.md](docs/PLAN.md) 참고.
+요구사항 정의서는 [docs/SRS.md](docs/SRS.md), 전체 구현 계획과 근거는 [docs/PLAN.md](docs/PLAN.md) 참고.
